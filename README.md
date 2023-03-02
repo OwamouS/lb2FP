@@ -43,6 +43,56 @@ add(Str, LeftLeaves, [{Key, Leaves} = Leaf | TailLeaves] = RightLeaves) ->
 Поиск по префиксу(вернет элемент, если есть совпадение и 'undefined' если не найдено)
 -----
 ```
+-spec search(nonempty_string(), [leaf()]) -> 'undefined' | nonempty_string().
+search(Str, Leaves) ->
+  search(Str, Leaves, _SearchPrefix = false).
+
+-spec search_prefix(nonempty_string(), [leaf()]) -> 'undefined' | nonempty_string().
+search_prefix([], _) ->
+  undefined;
+
+search_prefix([_ | Tail] = Str, Leaves) ->
+  case search(Str, Leaves, _SearchPrefix = true) of
+    undefined ->
+      search_prefix(Tail, Leaves);
+    Prefix ->
+      Prefix
+  end.
+
+-spec search(nonempty_string(), [leaf()], boolean()) -> 'undefined' | nonempty_string().
+search(Str, Leaves, SearchPrefix) ->
+  search(Str, Leaves, SearchPrefix, []).
+
+-spec search(nonempty_string(), [leaf()], boolean(), []) -> 'undefined' | nonempty_string().
+search(Str, [{Key, [?END | _]} | _], _, Acc) when Str == Key ->
+  lists:flatten(lists:reverse([Str | Acc]));
+
+search(Str, [{Key, _} | _], false, _) when Str == Key ->
+  undefined;
+
+search(_, [?END | _], true, Acc) ->
+  lists:flatten(lists:reverse(Acc));
+
+search(Str, [?END | TailLeaves], false, Acc) ->
+  search(Str, TailLeaves, false, Acc);
+
+search(_, Leaves, _, _) when Leaves == [] orelse Leaves == [?END] ->
+  undefined;
+
+search(Str, [{Key, ChildLeaves} | TailLeaves], SearchPrefix, Acc) ->
+  case compare(Str, Key) of
+    eq ->
+      case factorize(Str, Key) of
+        [Key, RPrefix] ->
+          search(RPrefix, ChildLeaves, SearchPrefix, [Key | Acc]);
+        _ ->
+          undefined
+      end;
+    lt ->
+      undefined;
+    gt ->
+      search(Str, TailLeaves, SearchPrefix, Acc)
+  end.
 ```
 Поиск по префиксу(вернет элемент, если есть совпадение и 'undefined' если не найдено)
 -----
