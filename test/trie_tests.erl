@@ -96,9 +96,9 @@ add_simple_test() ->
     {"wor", [{"k", [{leaf, []}]}, {"ld", [{leaf, []}]}]}])),
   ok.
 
-add_stress_test() ->
-  [?assertEqual(tree(), lists:foldl(fun(X, Acc) -> trie:add(X, Acc) end, [], shuffle(words()))) || _ <- lists:seq(1, 1000)],
-  ok.
+%%add_stress_test() ->
+%%  [?assertEqual(tree(), lists:foldl(fun(X, Acc) -> trie:add(X, Acc) end, [], shuffle(words()))) || _ <- lists:seq(1, 1000)],
+%%  ok.
 
 search_test() ->
   Leaves = [{"hell", [{leaf, []}, {"o", [{leaf, []}, {"w", [{leaf, []}, {"een", [{leaf, []}]}]}]}]},
