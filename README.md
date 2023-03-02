@@ -94,7 +94,35 @@ search(Str, [{Key, ChildLeaves} | TailLeaves], SearchPrefix, Acc) ->
       search(Str, TailLeaves, SearchPrefix, Acc)
   end.
 ```
-Поиск по префиксу(вернет элемент, если есть совпадение и 'undefined' если не найдено)
+Создать ноды из двух строк(Вспомогательная функция - принимает две строки; на выходе - ноды. Пример factorize("cars","cats")==["ca", "r", "ts"])
 -----
 ```
+-spec factorize(nonempty_string(), nonempty_string()) -> list().
+factorize(Xs, Ys) ->
+  lists:reverse(factorize(Xs, Ys, [])).
+
+factorize([], [], Acc) ->
+  Acc;
+
+factorize([], Ys, Acc) ->
+  [Ys, lists:reverse(Acc)];
+
+factorize(Xs, [], Acc) ->
+  [Xs, lists:reverse(Acc)];
+
+factorize([X | _] = Xs, [Y | _] = Ys, []) when X < Y ->
+  [Ys, Xs];
+
+factorize([X | _] = Xs, [Y | _] = Ys, []) when X > Y ->
+  [Xs, Ys];
+
+factorize([X | _] = Xs, [Y | _] = Ys, Acc) when X < Y ->
+  [Ys, Xs, lists:reverse(Acc)];
+
+factorize([X | _] = Xs, [Y | _] = Ys, Acc) when X > Y ->
+  [Xs, Ys, lists:reverse(Acc)];
+
+factorize([X | Xs1], [Y | Ys1], Acc) when X == Y ->
+  factorize(Xs1, Ys1, [X | Acc]).
+
 ```
