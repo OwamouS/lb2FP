@@ -1,0 +1,18 @@
+%%%-------------------------------------------------------------------
+%% @doc lb2FP public API
+%% @end
+%%%-------------------------------------------------------------------
+
+-module(lb2FP_app).
+
+-behaviour(application).
+
+-export([start/2, stop/1]).
+
+start(_StartType, _StartArgs) ->
+    lb2FP_sup:start_link().
+
+stop(_State) ->
+    ok.
+
+%% internal functions
