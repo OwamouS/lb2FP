@@ -10,9 +10,14 @@
 
 %% API exports
 -export([new/0,
+  add/2,
   add_leaf/2,
+  search/2,
   search_leaf/2,
-  search_prefix_leaf/2]).
+  search_prefix/2,
+  search_prefix_leaf/2,
+  factorize/2,
+  compare/2]).
 
 -type tree():: {'root', [leaf()]}.
 

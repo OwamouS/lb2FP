@@ -10,25 +10,34 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
+-import(
+trie,
+[
+new/0,
+add/2,
+add_leaf/2,
+search/2,
+search_leaf/2,
+search_prefix/2,
+search_prefix_leaf/2,
+factorize/2,
+compare/2
+]
+).
 
-compare_test_() ->
-  [{timeout, 1, [{"Check for eq", fun compare_eq_tests/0}]},
-    {timeout, 1, [{"Check for lt", fun compare_lt_tests/0}]},
-    {timeout, 1, [{"Check for gt", fun compare_gt_tests/0}]}].
-
-compare_eq_tests() ->
+compare_eq_test() ->
   ?assertEqual(eq, trie:compare("a",      "a")),
   ?assertEqual(eq, trie:compare("a",      "abc")),
   ?assertEqual(eq, trie:compare("a",      "abcdef")),
   ok.
 
-compare_lt_tests() ->
+compare_lt_test() ->
   ?assertEqual(lt, trie:compare("a",      "b")),
   ?assertEqual(lt, trie:compare("a",      "bcd")),
   ?assertEqual(lt, trie:compare("abcdef", "bcd")),
   ok.
 
-compare_gt_tests() ->
+compare_gt_test() ->
   ?assertEqual(gt, trie:compare("a",      leaf)),
   ?assertEqual(gt, trie:compare("abc",    leaf)),
 
@@ -54,11 +63,7 @@ factorize_test() ->
   ?assertEqual(["green", "yellow"], trie:factorize("yellow", "green")),
   ok.
 
-add_test_() ->
-  [{timeout, 1,  [{"Add words simple", fun add_simple_tests/0}]},
-    {timeout, 30, [{"Add words stress", fun add_stress_tests/0}]}].
-
-add_simple_tests() ->
+add_simple_test() ->
   ?assertEqual([{"hello", [{leaf, []}]}], trie:add("hello", [])),
   ?assertEqual([{"hello", [{leaf, []}]}], trie:add("hello", [{"hello", [{leaf, []}]}])),
 
@@ -91,15 +96,11 @@ add_simple_tests() ->
     {"wor", [{"k", [{leaf, []}]}, {"ld", [{leaf, []}]}]}])),
   ok.
 
-add_stress_tests() ->
+add_stress_test() ->
   [?assertEqual(tree(), lists:foldl(fun(X, Acc) -> trie:add(X, Acc) end, [], shuffle(words()))) || _ <- lists:seq(1, 1000)],
   ok.
 
-search_test_() ->
-  [{timeout,  1, [{"Search word in Trie",         fun search_tests/0}]},
-    {timeout,  1, [{"Search prefix word in Trie",  fun search_prefix_tests/0}]}].
-
-search_tests() ->
+search_test() ->
   Leaves = [{"hell", [{leaf, []}, {"o", [{leaf, []}, {"w", [{leaf, []}, {"een", [{leaf, []}]}]}]}]},
     {"lovely", [{leaf, []}]},
     {"wor", [{"k", [{leaf, []}]}, {"ld", [{leaf, []}]}]}],
@@ -120,7 +121,7 @@ search_tests() ->
   ?assertEqual(undefined,     trie:search("wor",       Leaves)),
   ok.
 
-search_prefix_tests() ->
+search_prefix_test() ->
   Leaves = [{"hell", [{leaf, []}, {"o", [{leaf, []}, {"w", [{leaf, []}, {"een", [{leaf, []}]}]}]}]},
     {"lovely", [{leaf, []}]},
     {"wor", [{"k", [{leaf, []}]}, {"ld", [{leaf, []}]}]}],
@@ -163,6 +164,7 @@ search_leaf_test() ->
   ?assertEqual("hello",       trie:search_leaf("hello",     Tree)),
   ?assertEqual("hellow",      trie:search_leaf("hellow",    Tree)),
   ?assertEqual("helloween",   trie:search_leaf("helloween", Tree)),
+  ?assertEqual(undefined,   trie:search_leaf("hellowen", Tree)),
   ok.
 
 search_prefix_leaf_test() ->
